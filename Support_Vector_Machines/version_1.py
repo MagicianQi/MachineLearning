@@ -258,7 +258,25 @@ def predict(svm, test_x, test_y):
     return accuracy
 
 
+def data_preprocessing(x):
+    """
+    功能：数据预处理
+    参数：数据集
+    返回：处理后数据，均值，标准差
+    """
+    m, n = x.shape
+    miu = np.zeros((n, 1))
+    sigma = np.zeros((n, 1))
+    for i in range(n):
+        miu[i] = np.mean(x[:, i])
+        sigma[i] = np.std(x[:, i])
+    for j in range(m):
+        x[j, 1:] = np.divide(x[j, 1:] - miu[1:].transpose(), sigma[1:].transpose())
+    return x, miu, sigma
+
+
 if __name__ == '__main__':
     x, y = load_data('data.txt')
+    x, _, _ = data_preprocessing(x)
     svm = train(x[0:80, :], y[0:80, :], 0.6, 0.001, ('polynomial', 1))
     print(predict(svm, x[80:100, :], y[80:100, :]))
